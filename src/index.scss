@@ -1,0 +1,436 @@
+html,
+body{
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-height: 100%;
+	max-width: 100%;
+	min-height: 100%;
+	max-height: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+a{
+	text-decoration: none;
+	user-select: none;
+}
+canvas{
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	background-color: #fff;
+}
+div,
+canvas{
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+ul{
+	list-style-type: none;
+	padding-left: 10px;
+	margin: 0;
+}
+button{
+	appearance: none;
+	border: none;
+	background: none;
+	outline: none;
+}
+nav{
+	display: block;
+	margin: 0;
+	background-color: #192226;
+	&>ul{
+		position: relative;
+		display: inline-block;
+		padding-left: 0;
+		width: 100%;
+		z-index: 200;
+		&>li{
+			display: inline-block;
+			min-height: 100%;
+			&.view{
+				&>button{
+					background-color: #3ba5f3;
+					&>i{
+						transform: rotate(180deg);
+					}
+				}
+				&>div{
+					left: 0;
+				}
+			}
+			&>button{
+				display: block;
+				padding: 5px 5px 5px 0px;
+				color: #fff;
+				font-size: 1.1em;
+				font-weight: 400;
+				&>i{
+					transition: all .3s ease;
+				}
+				}
+		}
+	}
+}
+.menu_panel{
+	position: absolute;
+	display: block;
+	padding: 10px 0;
+	width: 100%;
+	left: -110%;
+	background-color: #3ba5f3;
+	border-bottom: 3px solid #248ad9;
+	//background-color #50c14e
+	//background-color #f6f6f6
+	font-size: 0.8em;
+	//box-shadow(0 2px 4px 2px rgba(20, 20, 20,0.5))
+	transition: all .3s ease;
+}
+.panel_button{
+	display: inline-block;
+	width: 120px;
+	color: #fff;
+	padding: 5px;
+	text-align: center;
+	transition: all .2s ease;
+	&:hover{
+		cursor: pointer;
+		background-color: #248ad9;
+		color: #fff;
+	}
+}
+/**
+*
+* inicio de codigo sin emplear
+* 
+*/
+#menu{
+	position: absolute;
+	width: 300px;
+	max-width: 400px;
+	max-height: 100%;
+	right: 0;
+	//background-color #264d6c
+	//background-color #363d43
+	background-color: #262d37;
+	overflow-y: auto;
+	z-index: 5;
+	top: -100%;
+	color: #fff;
+	text-align: justify;
+	box-shadow: 0 0 10px 2px rgba(0, 0, 0, .8);
+	transition: all .5s ease;
+	&>.menubox{
+		display: block;
+		width: 100%;
+		transition: all .5s ease;
+		background-color: #262d37;
+		&.show{
+			background-color: #2f405c;
+		}
+		&>.title{
+			padding: 5px;
+			display: block;
+			//background-color #34495e
+			color: #f2f2f2;
+			&>i{
+				position: relative;
+				float: right;
+				transition: all .5s ease;
+				&.view{
+					transform: rotate(180deg);
+				}
+			}
+		}
+		&>.boxbody{
+			overflow: hidden;
+			color: #fff;
+			&>div{
+				padding: 10px 0;
+			}
+		}
+	}
+	&>.buttonbox{
+		display: block;
+	}
+	&.hidden{
+		top: 0%;
+	}
+}
+#base_modal{
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	justify-content: center;
+	left: 0;
+	top :-100%;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.6);
+	z-index: 100;
+	transition: all .3s ease;
+	&.show{
+		top: 0;
+	}
+	&>.modal_form{
+		width: 50%;
+		margin: 0 auto;
+		padding: 10px;
+		background-color: #f2f2f2;
+		z-index: 300;
+		border-radius: 10px;
+		&>.form-group{
+			position: relative;
+			width: 100%;
+			margin-bottom: 10px;
+			background-color: none;
+			&>label{
+				text-shadow: none;
+				cursor: text;
+				position: absolute;
+				left: 5px;
+				top: 13px;
+				color: #222;
+				transition: all .3s ease;
+				user-select: none;
+				&.focus{
+					font-size: 0.8em;
+					top: -6px;
+					left: 0px;
+				}
+			}
+			&>input,
+			&>textarea{
+				appearance: none;
+				outline: none;
+				text-shadow: none;
+				width: 100%;
+				font-size: 1.2em;
+				border: none;
+				padding-bottom: 5px;
+				background-color: white;
+				border-bottom: 4px solid #1691bd;
+				margin: 10px 0;
+				//text-shadow 1px 2px 2px rgba(0,0,0,0.6)
+				&:hover,
+				&:focus{
+					outline: none;
+					border-bottom: 4px solid #50c14e;
+				}
+			}
+		}
+	}
+}
+.btn{
+	appearance: none;
+	position: relative;
+	margin: 0 auto;
+	border: 0;
+	padding: 10px;
+	font-size: 1em;
+	background: none;
+	&:active,
+	&:visited
+	&:hover{
+		border: none;
+	}
+}
+.btn-left{
+	float: left;
+}
+.btn-right{
+	float: right;
+}
+.btn-one{
+	color: #07b860;
+}
+.btn-two{
+	color: #0099dd;
+}
+.btn-three{
+	color: #fe7f0c;
+}
+.btn-four{
+	color: #1d3c50;
+}
+.btn-five{
+	color: #e03625;
+}
+
+.window{
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+
+
+
+/**
+*
+* fin de codigo sin emplear
+* 
+*/
+
+
+
+
+#app{
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-height: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+}
+.flex{
+	display: flex;
+	width: 100%;
+	height: 100%;
+}
+.column{
+	flex-direction: column;
+}
+.row{
+	flex-direction: row;
+	align-items: stretch;
+}
+.auto-flex{
+	flex: 1 1 0em;
+}
+#board{
+	position: relative;
+	overflow: auto;
+	background-color: #f4f7fa;
+}
+#toolbox{
+	width: 0px;
+	height: 100%;
+	//background-color #eef2f5
+	background-color: #f4f7fa;
+	overflow-x: hidden;
+	overflow-y: auto;
+	transition: all .4s ease;
+	&.show{
+		border-right: 2px solid #e2e7ec;
+		width: 50px;
+		min-width: 50px;
+	}
+}
+.content-toolbox{
+	display: block;
+	width: 50px;
+	height: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+img[my-role="element"]{
+	display: block;
+	margin: 0 auto;
+	width: 40px;
+	padding: 5px 0;
+}
+.content-project{
+	max-width: 200px;
+	overflow: auto;
+}
+.content-property{
+	width: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+#files{
+	width: 0px;
+	background-color: #fff;
+	transition: all .4s ease;
+	& .close{
+		display: none;
+	}
+	&.show{
+		border-left: 2px solid #e2e7ec;
+		width: 200px;
+		& .close{
+			display: block;
+		}
+	}
+}
+#property{
+	height: 0px;
+	background-color: #fff;
+	transition: all .4s ease;
+	& .close{
+		display: none;
+	}
+	&.show{
+		border-top: 2px solid #e2e7ec;
+		height: 200px;
+		& .close{
+			display: block;
+		}
+	}
+}
+.close{
+	display: block;
+	width: 100%;
+	padding: 4px;
+	text-align: left;
+	//background-color #eef2f5
+	border-bottom: 1px solid #e9eef3;
+	font-weight: 600;
+	&>span{
+		color: #5a6779;
+	}
+	&>button{
+		float: right;
+		color: #f56665;
+	}
+}
+/**
+*
+* Estilos para los forularios
+*
+*/
+.form-controller{
+	display: inline-block;
+	margin: 5px;
+	&>label{
+		user-select: none;
+		cursor: pointer;
+		padding: 5px;
+		font-weight: 600;
+		transition: all .2s ease;
+	}
+	&>input[type="checkbox"],
+	&>input[type="radio"]{
+		display: none;
+		& + label{
+			user-select: none;
+			color: #fff;
+			font-size: 1.1em;
+		}
+		&:checked + label{
+			//background-color #50c14e
+			background-color: #248ad9;
+			color: #fff;
+		}
+	}
+}
+@media (max-width: 991.9px){
+	body{
+		font-size: 14px;
+	}
+}
+@media (min-width: 992px){
+	body{
+		font-size: 14px;
+	}
+}
