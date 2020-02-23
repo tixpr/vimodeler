@@ -1,6 +1,6 @@
-import React from 'react';
+import {Component} from 'react';
 
-export default class PanelButton extends React.Component{
+export default class PanelButton extends Component{
 	click(e){
 		e.preventDefault();
 		this.content.parentNode.parentNode.classList.toggle('view');

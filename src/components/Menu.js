@@ -1,9 +1,9 @@
-import React from 'react';
+import {Component} from 'react';
 import MenuButton from './MenuButton';
 import PanelButton from './PanelButton';
 import PanelCheckbox from './PanelCheckbox';
 
-export default class Menu extends React.Component{
+export default class Menu extends Component{
 	constructor(props){
 		super(props);
 		window.__menu = this;

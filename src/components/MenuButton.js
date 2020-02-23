@@ -1,6 +1,6 @@
-import React from 'react';
+import {Component} from 'react';
 
-export default class MenuButton extends React.Component{
+export default class MenuButton extends Component{
 	click(e){
 		e.preventDefault();
 		let eview = document.querySelector('li.view');

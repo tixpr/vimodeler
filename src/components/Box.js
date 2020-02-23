@@ -1,6 +1,6 @@
-import React from 'react';
+import {Component} from 'react';
 
-export default class Box extends React.Component{
+export default class Box extends Component{
 	componentDidMount(){
 		//this.box.addEventListener('dragstart',(e)=>this.dragStart(e),false);
 	}

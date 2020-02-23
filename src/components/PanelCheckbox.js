@@ -1,6 +1,6 @@
-import React from 'react';
+import {Component} from 'react';
 
-export default class PanelCheckbox extends React.Component{
+export default class PanelCheckbox extends Component{
 	changeController(){
 		//this.content.parentNode.parentNode.classList.toggle('view');
 		if(this.props.on_change){

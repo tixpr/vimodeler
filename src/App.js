@@ -1,11 +1,11 @@
-import React from 'react';
+import {Component} from 'react';
 import ToolBox from './components/ToolBox';
 import Board from './components/Board';
 import Files from './components/Files';
 import Property from './components/Property';
 import Menu from './components/Menu';
 
-export default class VModel extends React.Component{
+export default class VModel extends Component{
 	constructor(props){
 		super(props);
 		window.__vmodel = this;
@@ -18,7 +18,7 @@ export default class VModel extends React.Component{
 		//this.newDiagram();
 	}
 	newMap(){
-		this.board.addMap('Mapa');
+		this.board.addMap('mapa');
 	}
 	newDiagram(){
 		this.board.addDiagram('diagrama');

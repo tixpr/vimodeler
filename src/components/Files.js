@@ -1,6 +1,6 @@
-import React from 'react';
+import {Component} from 'react';
 
-export default class Files extends React.Component{
+export default class Files extends Component{
 	constructor(props) {
 		super(props);
 		window.__files = this;

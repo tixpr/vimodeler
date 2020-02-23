@@ -1,7 +1,7 @@
-import React from 'react';
+import {Component} from 'react';
 import ModalInput from './ModalInput';
 
-export default class Modal extends React.Component{
+export default class Modal extends Component{
 	constructor(props){
 		super(props);
 	}

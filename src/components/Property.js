@@ -1,6 +1,6 @@
-import React from 'react';
+import {Component} from 'react';
 
-export default class Property extends React.Component{
+export default class Property extends Component{
 	constructor(props) {
 		super(props);
 		window.__property = this;

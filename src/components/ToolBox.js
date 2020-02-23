@@ -1,4 +1,4 @@
-import React from 'react';
+import {Component} from 'react';
 import Box from './Box';
 let map_data = [
 	{
@@ -40,7 +40,7 @@ diagram_data = [
 		'name':'Gateway'
 	}
 ];
-export default class ToolBox extends React.Component{
+export default class ToolBox extends Component{
 	constructor(props) {
 		super(props);
 		this.state = {

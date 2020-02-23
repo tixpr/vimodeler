@@ -1,7 +1,7 @@
-import React from 'react';
-import Modelayer from '../Modelayer';
+import {Component} from 'react';
+import Modelayer from '../modelayer/Modelayer';
 
-export default class Board extends React.Component{
+export default class Board extends Component{
 	constructor(props){
 		super(props);
 		this.modelayer = null;
@@ -33,7 +33,7 @@ export default class Board extends React.Component{
 		window.__toolbox.setMode("map");
 	}
 	addDiagram(name=''){
-		this.modelayer.addProcessMap(name);
+		this.modelayer.addProcessDiagram(name);
 		window.__toolbox.setMode("diagram");
 	}
 	render(){
