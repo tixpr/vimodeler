@@ -3,7 +3,6 @@ import ProcessMap from './ProcessMap';
 import ProcessDiagram from './ProcessDiagram';
 //elementos
 
-
 Array.prototype.remove = Array.prototype.remove || 
 						function(e) {
 							let i = this.indexOf(e);
@@ -134,18 +133,12 @@ export default class Modelayer extends EventCore{
 		let map = new ProcessMap(this,{name:name});
 		this.models.push(map);
 		this.model = map;
-		this.cvs.setAttribute('width', window.screen.width+'px');
-		this.cvs.setAttribute('height', window.screen.height+'px');
-		window.__toolbox.setMode("map");
 		//return map;
 	}
 	addProcessDiagram(name){
 		let diagram = new ProcessDiagram(this,{name:name});
 		this.models.push(diagram);
 		this.model = diagram;
-		this.cvs.setAttribute('width', window.screen.width+'px');
-		this.cvs.setAttribute('height', window.screen.height+'px');
-		window.__toolbox.setMode("diagram");
 		//return diagram;
 	}
 	addProject(name){
@@ -161,7 +154,5 @@ export default class Modelayer extends EventCore{
 			this.cvs.setAttribute('height', dimension.height+'px');
 		}
 		this.model.draw();
-	}
-	openFile(file){
 	}
 }

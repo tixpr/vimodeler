@@ -29,7 +29,6 @@ export default class Process extends Artefact {
 		this.addEventListener('dragstart', (e) => this.dragResize(e), false);
 		this.addEventListener('dragmove', (e) => this.dragResize(e), false);
 		this.addEventListener('dragend', (e) => this.dragResize(e), false);
-		console.info(this.core);
 	}
 	get lx() {
 		return this.width / 2;

@@ -1,0 +1,42 @@
+{
+	"maps":[
+		{
+			"name": "Gestión de Biblioteca",
+			"id":1,
+			"data":[],
+			"sub_maps":null,
+			"diagram":null
+		},
+		{
+			"name": "Recursos Humanos",
+			"id":2,
+			"data":[],
+			"sub_maps":null,
+			"diagram":null
+		},
+		{
+			"name": "Gestión Académica",
+			"id":3,
+			"data":[],
+			"sub_maps":null,
+			"diagram":null
+		}
+	],
+	"diagrams":[
+		{
+			"name": "Análisis de Resultados",
+			"id":1,
+			"data":[]
+		},
+		{
+			"name": "Expulsión de personal",
+			"id":2,
+			"data":[]
+		},
+		{
+			"name": "Análisis de Resultados",
+			"id":3,
+			"data":[]
+		}
+	]
+}

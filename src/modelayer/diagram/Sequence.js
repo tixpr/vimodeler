@@ -8,8 +8,6 @@ export default class Sequence extends Flow{
 	}
 	setStart (artefact, mode){
 		let r = this.resizers[0], e = artefact.core;
-		console.info(artefact);
-		console.info(e);
 		if(mode === 'none'){
 			mode = 'right';
 		}
