@@ -2,35 +2,34 @@ import Artefact from '../base/Artefact';
 
 //artefcto texto de un mapa
 export default class Label extends Artefact{
-	constructor(map, object, artefact=null){
-		super(map, object);
-		this.className = 'Label';
+	constructor(map, obj, artefact=null){
+		super(map, obj);
 		this.lx = this.fontWidth / 2;
 		this.ly = this.fontHeight / 2;
 		this.parent_artefact = artefact;
 	}
 	applyStyle (ctx){
-		ctx.fillStyle = this.fontfill;
+		ctx.fillStyle = this.fontFill;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
 		ctx.translate(this.x, this.y);
-		ctx.font = this.font;
+		ctx.font = this.font();
 	}
 	toJSON(){
-		return JSON.stringify(this.core);
+		return JSON.stringify(this);
 	}
 	draw (ctx){
 		ctx.save();
 		this.applyStyle(ctx);
 		let ts = this.name.split('\n'),
-			h = -this.fontheight / this.fontline;
+			h = -this.fontHeight / this.fontLine;
 		if (ts.length > 1) {
 			for (let i = 0, n = ts.length; i < n; i++) {
-				ctx.fillText(ts[i], 0, h, this.fontwidth);
-				h += this.fontsize;
+				ctx.fillText(ts[i], 0, h, this.fontWidth);
+				h += this.fontSize;
 			}
 		} else {
-			ctx.fillText(ts[0], 0, 0, this.fontwidth);
+			ctx.fillText(ts[0], 0, 0, this.fontWidth);
 		}
 		ctx.restore();
 	}

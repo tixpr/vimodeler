@@ -3,16 +3,14 @@ import Label from './Label';
 import Resizer from '../base/Resizer';
 
 //artefacto flujo de un mapà
-export default class Flow extends Artefact{
-	constructor(map, object){
-		super(map, object);
-		this.core.points = this.core.points || [this.x-50, this.y, this.x+50, this.y];
-		this.className = 'Flow';
+export default class Flow extends Artefact {
+	constructor(model, object) {
+		super(model, object);
+		this.points = this.points || [{ x: this.x - 50, y: this.y }, { x: this.x + 50, y: this.y }];
 		this.x = 0;
 		this.y = 0;
-		let mx = this.points[0] + 50,
-			my = this.points[1] + 10;
-		this.text = new Label(map, {name:this.name,x:mx, y:my},this);
+		this.angle = 0;
+		this.text = new Label(model, { name: this.name, x: this.points[0].x + 50, y: this.points[0].y + 10 }, this);
 		this.parent.addArtefact(this.text);
 		let temp_resizers = [];
 		//variable que controla que punto se a movido
@@ -20,145 +18,135 @@ export default class Flow extends Artefact{
 		//1->se mueve artefact punto inicial (start)
 		//2->se mueve artefact punto final (end)
 		this.mov_point = 0;
-		if ((this.points.length) / 2 === 2) {
+		console.info(this.points);
+		this.addEventListener('dragend',()=>this.dropFlow());
+		if (this.points.length === 2) {
 			//redimensionador 1
-			let r = new Resizer(this, map, this.points[0], this.points[1], 'moveStartPoint');
-			r.addEventListener('dragend', (e)=>this.dragEndResizer(e));
+			let r = new Resizer(this, model, this.points[0].x, this.points[0].y, 'moveStartPoint');
+			r.addEventListener('dragend', (e) => this.dragEndResizer(e));
 			temp_resizers.push(r);
 			//redimensionador 2
-			r = new Resizer(this, map, this.points[2], this.points[3], 'moveEndPoint');
-			r.addEventListener('dragend', (e)=>this.dragEndResizer(e));
+			r = new Resizer(this, model, this.points[1].x, this.points[1].y, 'moveEndPoint');
+			r.addEventListener('dragend', (e) => this.dragEndResizer(e));
 			temp_resizers.push(r);
 			this.resizers = temp_resizers;
 		} else {
-			let r = new Resizer(this, map, object.points[0], object.points[1], 'moveStartPoint'),
+			let r = new Resizer(this, model, this.points[0].x, this.points[0].y, 'moveStartPoint'),
 				n = this.points.length - 2;
-			r.addEventListener('dragend', (e)=>this.dragEndResizer(e));
+			r.addEventListener('dragend', (e) => this.dragEndResizer(e));
 			temp_resizers.push(r);
-			for (let j = 2; j < n; j += 2) {
-				r = new Resizer(this, map, object.points[j], object.points[j + 1], 'movePoint', j);
+			for (let j = 1; j < n; j++) {
+				r = new Resizer(this, model, this.points[j].x, this.points[j].y, 'movePoint', j);
 				temp_resizers.push(r);
 			}
-			r = new Resizer(this, map, object.points[n], object.points[n + 1], 'moveEndPoint');
-			r.addEventListener('dragend', (e)=>this.dragEndResizer(e));
+			r = new Resizer(this, model, this.points[n].x, this.points[n].y, 'moveEndPoint');
+			r.addEventListener('dragend', (e) => this.dragEndResizer(e));
 			temp_resizers.push(r);
 			this.resizers = temp_resizers;
 		}
 	}
-	set points(val){
-		this.core.points = val;
-		this.parent.draw();
-	}
-	get points(){
-		return this.core.points;
-	}
-	set angle(val){
-		this.core.angle = val;
-		this.parent.draw();
-	}
-	get angle(){
-		return this.core.angle || 0;
-	}
-	setStart (art, mode){
-		let r = this.resizers[0];
+	setStart(artefact, mode) {
+		let r = this.resizers[0],
+			p = this.points[0];
 		switch (mode) {
 			case 'left':
-				this.points[0] = art.x;
-				r.x = art.x;
+				p.x = artefact.x;
+				r.x = artefact.x;
 				break;
 			case 'top':
-				this.points[1] = art.y;
-				r.y = art.y;
+				p.y = artefact.y;
+				r.y = artefact.y;
 				break;
 			case 'right':
-				this.points[0] = art.x + art.width;
-				r.x = art.x + art.width;
+				p.x = artefact.x + artefact.width;
+				r.x = artefact.x + artefact.width;
 				break;
 			case 'bottom':
-				this.points[1] = art.y + art.height;
-				r.y = art.y + art.height;
+				p.y = artefact.y + artefact.height;
+				r.y = artefact.y + artefact.height;
 				break;
 			default: break;
 		}
-		this.start = art;
+		this.start = artefact;
 		this.startMode = mode;
 	}
-	setEnd (artefact, mode){
+	setEnd(artefact, mode) {
 		let n = this.points.length,
 			r = this.resizers[this.resizers.length - 1],
 			e = artefact;
+		let p = this.points[n - 1];
 		switch (mode) {
 			case 'left':
-				this.points[n - 2] = e.x;
+				p.x = e.x;
 				r.x = e.x;
 				this.angle = 0;
 				break;
 			case 'top':
-				this.points[n - 1] = e.y;
+				p.y = e.y;
 				r.y = e.y;
 				this.angle = 270;
 				break;
 			case 'right':
-				this.points[n - 2] = e.x + e.width;
+				p.x = e.x + e.width;
 				r.x = e.x + e.width;
 				this.angle = 180;
 				break;
 			case 'bottom':
-				this.points[n - 1] = e.y + e.height;
+				p.y = e.y + e.height;
 				r.y = e.y + e.height;
 				this.angle = 90;
 				break;
-			default:break;
+			default: break;
 		}
 		this.end = artefact;
 		this.endMode = mode;
 	}
-	applyStyle (ctx){
+	applyStyle(ctx) {
 		ctx.lineWidth = 4;
 		ctx.strokeStyle = '#000';
 		ctx.fillStyle = '#000';
 		ctx.lineCap = 'square';
 		ctx.translate(this.x, this.y);
 	}
-	draw(ctx){
+	draw(ctx) {
 		ctx.save();
 		this.applyStyle(ctx);
 		ctx.beginPath();
 		let i = 0,
 			n = this.points.length,
 			point = this.points;
-		ctx.moveTo(point[0], point[1]);
-		for (i = 2; i < n-1; i += 2) {
-			ctx.lineTo(point[i], point[i + 1]);
+		ctx.moveTo(point[0].x, point[0].y);
+		for (i = 1; i < n; i++) {
+			ctx.lineTo(point[i].x, point[i].y);
 		}
 		//ctx.lineTo(mx,my);
-		let mx = point[i - 2],
-			my = point[i - 1];
+		let mx = point[i - 1].x,
+			my = point[i - 1].y;
 		switch (this.angle) {
 			case 0:
-				ctx.lineTo(mx-7,my);
-				ctx.moveTo(mx,my);
+				ctx.lineTo(mx - 7, my);
+				ctx.moveTo(mx, my);
 				ctx.lineTo(mx - 9, my - 7);
 				ctx.lineTo(mx - 9, my + 7);
 				ctx.lineTo(mx, my);
 				break;
 			case 90:
-				ctx.lineTo(mx,my+7);
-				ctx.moveTo(mx,my);
+				ctx.lineTo(mx, my + 7);
+				ctx.moveTo(mx, my);
 				ctx.lineTo(mx - 7, my + 9);
 				ctx.lineTo(mx + 7, my + 9);
 				ctx.lineTo(mx, my);
 				break;
 			case 180:
-				ctx.lineTo(mx+7,my);
-				ctx.moveTo(mx,my);
+				ctx.lineTo(mx + 7, my);
+				ctx.moveTo(mx, my);
 				ctx.lineTo(mx + 9, my - 7);
 				ctx.lineTo(mx + 9, my + 7);
 				ctx.lineTo(mx, my);
 				break;
 			case 270:
-				ctx.lineTo(mx,my-7);
-				ctx.moveTo(mx,my);
+				ctx.lineTo(mx, my - 7);
+				ctx.moveTo(mx, my);
 				ctx.lineTo(mx + 7, my - 9);
 				ctx.lineTo(mx - 7, my - 9);
 				ctx.lineTo(mx, my);
@@ -171,29 +159,15 @@ export default class Flow extends Artefact{
 		ctx.stroke();
 		ctx.restore();
 	}
-	drawResizers (ctx){
-		for (let n = this.resizers.length - 1; n >= 0; n--) {
-			this.resizers[n].draw(ctx, this.getPosition());
-		}
+	drawResizers(ctx) {
+		this.resizers.map(r => r.draw(ctx, this.getPosition()));
 	}
-	hitTest (point){
-		this.draw(this.temp_ctx);
-		return this.temp_ctx.isPointInStroke(point.x, point.y) || this.temp_ctx.isPointInPath(point.x, point.y);
+	hitTest(point) {
+		this.draw(window._ctx);
+		return window._ctx.isPointInStroke(point.x, point.y) || window._ctx.isPointInPath(point.x, point.y);
 	}
-	dragEndFlow(){
-		let ps = this.points,
-			r = this.resizers;
-		for (let i = 0, n = ps.length; i < n; i += 2) {
-			ps[i] += this.x;
-			ps[i + 1] += this.y;
-		}
-		for (let j = 0, m = r.length; j < m; j++) {
-			r[j].x += this.x;
-			r[j].y += this.y;
-		}
-		this.x = 0;
-		this.y = 0;
-		/*
+	dropFlow(){
+		console.info('drop flow');
 		if (this.start) {
 			this.start.removeOutput(this, this.startMode);
 			delete this.start;
@@ -205,66 +179,74 @@ export default class Flow extends Artefact{
 			delete this.endMode;
 			this.angle = 0;
 		}
-		*/
 	}
-	dragEndResizer(){
-		let r = this.resizers, point;
+	dragEndFlow() {
+		let ps = this.points,
+			r = this.resizers;
+		for (let i = 0, n = ps.length; i < n; i++) {
+			ps[i].x += this.x;
+			ps[i].y += this.y;
+		}
+		for (let j = 0, m = r.length; j < m; j++) {
+			r[j].x += this.x;
+			r[j].y += this.y;
+		}
+		this.x = 0;
+		this.y = 0;
+	}
+	dragEndResizer() {
+		let r = this.resizers, obj;
 		switch (this.mov_point) {
 			case 1:
-				point = this.parent.intersectTest(r[0].x, r[0].y);
+				obj = this.parent.intersectTest({ x: r[0].x, y: r[0].y });
 				let pr = this.start;
 				if (pr) {
 					pr.removeOutput(this, this.startMode);
 					delete this.start;
 					delete this.startMode;
 				}
-				if (point) {
-					this.setStart(point.artefact, point.mode);
-					point.artefact.addOutput(this, point.mode);
+				if (obj) {
+					this.setStart(obj.artefact, obj.mode);
+					obj.artefact.addOutput(this, obj.mode);
 					this.parent.draw();
-				} else {
-					//console.info('ningun elemento dentro del drag->start');
 				}
 				break;
 			case 2:
-				point = this.parent.intersectTest(r[r.length - 1].x, r[r.length - 1].y);
+				obj = this.parent.intersectTest({ x: r[r.length - 1].x, y: r[r.length - 1].y });
 				let pe = this.end;
 				if (pe) {
 					pe.removeInput(this, this.endMode);
 					delete this.end;
 					delete this.endMode;
 				}
-				if (point) {
-					this.setEnd(point.artefact, point.mode);
-					point.artefact.addInput(this, point.mode);
+				if (obj) {
+					this.setEnd(obj.artefact, obj.mode);
+					obj.artefact.addInput(this, obj.mode);
 					this.parent.draw();
-				} else {
-					//console.info('ningun proceso dentro del drag->end');
 				}
 				break;
-			default:break;
+			default: break;
 		}
 	}
-	moveEndPoint (mx, my){
-		let point = this.points;
-		let n = point.length;
-		point[n - 2] += mx;
-		point[n - 1] += my;
+	moveEndPoint(mx, my) {
+		let point = this.points[this.points.length - 1];
+		point.x += mx;
+		point.y += my;
 		let r = this.resizers[this.resizers.length - 1];
 		r.x += mx;
 		r.y += my;
 		this.mov_point = 2;
 	}
-	moveStartPoint (mx, my){
-		let point = this.points;
-		point[0] += mx;
-		point[1] += my;
+	moveStartPoint(mx, my) {
+		let point = this.points[0];
+		point.x += mx;
+		point.y += my;
 		let r = this.resizers[0];
 		r.x += mx;
 		r.y += my;
 		this.mov_point = 1;
 	}
-	movePoint (mx, my, two_point){
+	movePoint(mx, my, two_point) {
 		// moviento un punto entre artefact inicio y final
 		let r = this.resizers[two_point / 2],
 			point = this.points;
@@ -273,11 +255,11 @@ export default class Flow extends Artefact{
 		r.x += mx;
 		r.y += my;
 	}
-	alterElements (mx, my){
+	alterElements(mx, my) {
 		this.text.x += mx;
 		this.text.y += my;
 	}
-	toJSON(){
-		return JSON.stringify(this.core);
+	toJSON() {
+		return JSON.stringify(this);
 	}
 };

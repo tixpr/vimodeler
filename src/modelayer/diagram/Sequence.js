@@ -2,31 +2,28 @@ import Flow from '../map/Flow';
 
 //artefacto de sequencia en diagrama
 export default class Sequence extends Flow{
-	constructor (diagram, object){
-		super(diagram, object);
-		this.className = 'Sequence';
-	}
 	setStart (artefact, mode){
-		let r = this.resizers[0], e = artefact.core;
+		console.info('setStart',artefact);
+		let r = this.resizers[0], e = artefact;
 		if(mode === 'none'){
 			mode = 'right';
 		}
 		if(e.className === 'Task'){
 			switch (mode) {
 				case 'left':
-					this.core.points[0] = e.x;
+					this.points[0].x = e.x;
 					r.x = e.x;
 					break;
 				case 'top':
-					this.core.points[1] = e.y;
+					this.points[0].y = e.y;
 					r.y = e.y;
 					break;
 				case 'right':
-					this.core.points[0] = e.x + e.width;
+					this.points[0].x = e.x + e.width;
 					r.x = e.x + e.width;
 					break;
 				case 'bottom':
-					this.core.points[1] = e.y + e.height;
+					this.points[0].y = e.y + e.height;
 					r.y = e.y + e.height;
 					break;
 				default:break;
@@ -34,26 +31,26 @@ export default class Sequence extends Flow{
 		}else{
 			switch (mode) {
 				case 'left':
-					this.core.points[0] = e.x-15;
-					this.core.points[1] = e.y;
+					this.points[0].x = e.x-15;
+					this.points[0].y = e.y;
 					r.x = e.x-15;
 					r.y = e.y;
 					break;
 				case 'top':
-					this.core.points[0] = e.x;
-					this.core.points[1] = e.y-15;
+					this.points[0].x = e.x;
+					this.points[0].y = e.y-15;
 					r.y = e.y - 15;
 					r.x = e.x;
 					break;
 				case 'right':
-					this.core.points[0] = e.x + 15;
-					this.core.points[1] = e.y;
+					this.points[0].x = e.x + 15;
+					this.points[0].y = e.y;
 					r.x = e.x + 15;
 					r.y = e.y;
 					break;
 				case 'bottom':
-					this.core.points[0] = e.x;
-					this.core.points[1] = e.y + 15;
+					this.points[0].x = e.x;
+					this.points[0].y = e.y + 15;
 					r.y = e.y + 15;
 					r.x = e.x;
 					break;
@@ -64,31 +61,32 @@ export default class Sequence extends Flow{
 		this.startMode = mode;
 	}
 	setEnd (artefact, mode){
-		let n = this.core.points.length,
+		console.info('setEnd',artefact);
+		let n = this.points.length,
 			r = this.resizers[this.resizers.length - 1],
-			e = artefact.core;
+			e = artefact;
 		if( mode === 'none'){
 			mode = 'left';
 		}
 		if(e.className === 'Task'){
 			switch (mode) {
 				case 'left':
-					this.core.points[n - 2] = e.x;
+					this.points[n -1].x = e.x;
 					r.x = e.x;
 					this.angle = 0;
 					break;
 				case 'top':
-					this.core.points[n - 1] = e.y;
+					this.points[n - 1].y = e.y;
 					r.y = e.y;
 					this.angle = 270;
 					break;
 				case 'right':
-					this.core.points[n - 2] = e.x + e.width;
+					this.points[n - 1].x = e.x + e.width;
 					r.x = e.x + e.width;
 					this.angle = 180;
 					break;
 				case 'bottom':
-					this.core.points[n - 1] = e.y + e.height;
+					this.points[n - 1].y = e.y + e.height;
 					r.y = e.y + e.height;
 					this.angle = 90;
 					break;
@@ -97,29 +95,29 @@ export default class Sequence extends Flow{
 		}else{
 			switch (mode) {
 				case 'left':
-					this.core.points[n-2] = e.x-15;
-					this.core.points[n-1] = e.y;
+					this.points[n-1].x = e.x-15;
+					this.points[n-1].y = e.y;
 					r.x = e.x-15;
 					r.y = e.y;
 					this.angle = 0;
 					break;
 				case 'top':
-					this.core.points[n-2] = e.x;
-					this.core.points[n-1] = e.y-15;
+					this.points[n-1].x = e.x;
+					this.points[n-1].y = e.y-15;
 					r.y = e.y - 15;
 					r.x = e.x;
 					this.angle = 270;
 					break;
 				case 'right':
-					this.core.points[n-2] = e.x + 15;
-					this.core.points[n-1] = e.y;
+					this.points[n-1].x = e.x + 15;
+					this.points[n-1].y = e.y;
 					r.x = e.x + 15;
 					r.y = e.y;
 					this.angle = 180;
 					break;
 				case 'bottom':
-					this.core.points[n-2] = e.x;
-					this.core.points[n-1] = e.y + 15;
+					this.points[n-1].x = e.x;
+					this.points[n-1].y = e.y + 15;
 					r.y = e.y + 15;
 					r.x = e.x;
 					this.angle = 90;

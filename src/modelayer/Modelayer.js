@@ -1,158 +1,225 @@
 import EventCore from './base/EventCore';
-import ProcessMap from './ProcessMap';
-import ProcessDiagram from './ProcessDiagram';
-//elementos
-
-Array.prototype.remove = Array.prototype.remove || 
-						function(e) {
-							let i = this.indexOf(e);
-							if (i > -1) {
-								this.splice(i, 1);
-								return true;
-							} else {
-								//console.error('El artefacto no existe dentro del array');
-								return false;
-							}
-						};
-function mouse_move (e){
-	let ml = window.__modelayer;
-	if(ml){
-		//console.info(ml.artefact);
-		e.preventDefault();
-		let mx = e.movementX || e.mozMovementX || 0,
-			my = e.movementY || e.mozMovementY || 0;
-		if (ml.artefact.dragging) {
-			ml.artefact.dispatchEvent('dragmove', {x: mx, y:my});
-		} else {
-			ml.artefact.dispatchEvent('dragstart', {x: mx, y:my});
-		}
-		return false;
-	}
-}
+//=============MAP==================
+import Process from './map/Process';
+import Flow from './map/Flow';
+import Label from './map/Label';
+//============Diagram===============
+import Task from './diagram/Task';
+import StartEvent from './diagram/StartEvent';
+import IntermediateEvent from './diagram/IntermediateEvent';
+import EndEvent from './diagram/EndEvent';
+import Sequence from './diagram/Sequence';
+import Gateway from './diagram/Gateway';
 
 export default class Modelayer extends EventCore{
-	constructor(cvs) {
+	constructor(canvas, mode,model=null) {
 		super();
-		if(cvs.getContext){
-			this.cvs = cvs;
-			this.ctx = cvs.getContext('2d');
-			this.temp_ctx = document.createElement('canvas').getContext('2d');
+		if(canvas.getContext){
+			this.cvs = canvas;
+			this.ctx = this.cvs.getContext('2d');
+			window._ctx = document.createElement('canvas').getContext('2d');
 			this.cvs.addEventListener('mousedown',(e)=>this.mouseDown(e),false);
 			this.cvs.addEventListener('mouseup',(e)=>this.mouseUp(e),false);
 			this.cvs.addEventListener('dragover',(e)=>this.dragOver(e),false);
 			this.cvs.addEventListener('dragleave',(e)=>this.dragLeave(e),false);
 			this.cvs.addEventListener('drop',(e)=>this.drop(e),false);
-			this.className = 'Modelayer';
-			this.models = [];
-			this._model = null;
-			this._artefact = null;
-			window.__modelayer = this;
+			this.mode = mode;
+			this.model = model;
+			this.artefacts=[];
+			this.artefact = null;
+			this.intersectTest = null;
+			this.constructors = {};
+			this.mouseMove = (e)=>this.mouse_move(e);
+			this.mouse_move.bind(this);
+			switch(mode){
+				case "Map":
+					this.constructors = {
+						Process,
+						Flow,
+						Label
+					};
+					this.intersectTest = this.itsMap;
+					break;
+				case 'Diagram':
+					this.constructors = {
+						Task,
+						StartEvent,
+						IntermediateEvent,
+						EndEvent,
+						Sequence,
+						Gateway
+					};
+					this.intersects = [
+						'Task',
+						'StartEvent',
+						'IntermediateEvent',
+						'EndEvent',
+						'Gateway'
+					];
+					this.intersectTest = this.itsDiagram;
+					break;
+				default: break;
+			}
+			if(!model){
+				this.cvs.setAttribute('width', window.screen.width);
+				this.cvs.setAttribute('height', window.screen.height);
+			}
 		}else{
 			console.error('Su navegador no soporta Canvas, actualizar a la ultima versión estable disponible');
 		}
 	}
-	set model(v){
-		if(this.models.indexOf(v)>-1){
-			this._model = v;
-			v.draw();
-		}else{
-			console.error("el modelo proporcionado no se encuentra dentro de los modelos del Modelador");
+	mouse_move(e){
+		e.preventDefault();
+		let x = e.movementX || e.mozMovementX || 0,
+			y = e.movementY || e.mozMovementY || 0;
+		if (this.artefact.dragging) {
+			this.artefact.dispatchEvent('dragmove', {x, y});
+		} else {
+			this.artefact.dispatchEvent('dragstart', {x, y});
 		}
-	}
-	get model(){
-		return this._model;
-	}
-	set artefact(v){
-		this._artefact=v;
-	}
-	get artefact(){
-		return this._artefact;
+		return false;
 	}
 	mouseDown(e){
 		e.preventDefault();
-		let point = {
-			x: e.layerX,
-			y: e.layerY
-		};
-		let artefact = this.model.hitTest(point);
-		if(artefact){
-			this.artefact = artefact;
-			this.cvs.addEventListener('mousemove',mouse_move,false);
+		let a = this.hitTest({x: e.layerX,y: e.layerY});
+		if(a){
+			this.selectArtefact(a);
+			this.cvs.addEventListener('mousemove',this.mouseMove,false);
 		}else{
-			let opt = false;
-			if(this.artefact && this.model.artefact){
-				opt = true;
-			}
 			delete this.artefact;
-			delete this.model.artefact;
-			if(opt){
-				this.model.draw();
-			}
+			this.draw();
 		}
 		return false;
 	}
 	mouseUp(e){
 		e.preventDefault();
-		let artefact = this.artefact;
-		let mx = e.movementX || e.mozMovementX || 0,
-			my = e.movementY || e.mozMovementY || 0;
-		if(artefact){
-			if(artefact.dragging){
-				artefact.dispatchEvent('dragend',{x:mx, y:my});
-				this.model.artefact = artefact;
-				this.model.draw();
+		let a = this.artefact;
+		let x = e.movementX || e.mozMovementX || 0,
+			y = e.movementY || e.mozMovementY || 0;
+		if(a){
+			if(a.dragging){
+				a.dispatchEvent('dragend',{x, y});
 			} else {
-				artefact.dispatchEvent('click',{x:mx,y:my});
-				this.model.artefact = artefact;
-				this.model.draw();
+				a.dispatchEvent('click',{x,y});
 			}
+			if(this.artefact.className==="Resizer"){
+				this.artefact = this.artefact.artefact;
+			}else{
+				this.artefact = a;
+			}
+			this.draw();
 		}else{
 			console.info('artefacto no seleccionado');
 		}
-		this.cvs.removeEventListener('mousemove',mouse_move);
+		this.cvs.removeEventListener('mousemove',this.mouseMove);
 		return false;
 	}
 	dragOver(e){
-		//console.info('drag over');
 		e.preventDefault();
-		//this.cvs.classList.add('dragover');
 		return false;
 	}
 	dragLeave(e){
-		//console.info('drag leave');
 		e.preventDefault();
-		//this.cvs.classList.remove('dragover');
 		return false;
 	}
+	canvasResize(d){
+		if(this.cvs.clientWidth<d.width){
+			this.cvs.setAttribute('width', d.width);
+		}
+		if(this.cvs.clientHeight<d.height){
+			this.cvs.setAttribute('height', d.height);
+		}
+		this.draw();
+	}
+	//===============class Model======================
+	selectArtefact(a){
+		this.artefact = a;
+		if(this.artefacts.indexOf(a)>-1){
+			this.artefacts = this.artefacts.filter(el=>el!==a);
+			this.artefacts.push(a);
+			a.draw(this.ctx);
+		}
+	}
+	addArtefact(a){
+		this.artefacts.push(a);
+		this.artefact = a;
+		a.draw(this.ctx);
+	}
+	clear(x=0, y=0, width=this.cvs.width, height=this.cvs.height){
+		this.ctx.clearRect(x, y, width, height);
+	}
+	draw(){
+		this.clear();
+		this.artefacts.map(a=>a.draw(this.ctx));
+		if(this.artefact){
+			if(this.artefact.className==="Resizer"){
+				this.artefact.artefact.drawResizers(this.ctx);
+			}
+			if(this.artefact.resizers){
+				this.artefact.drawResizers(this.ctx);
+			}
+		}
+	}
+	hitTest(p){
+		let e=null;
+		if(this.artefact && this.artefact.resizers){
+			e = this.artefact.resizers.find(el=>el.hitTest(p,this.artefact.getPosition()));
+		}
+		if (!e) {
+			let i = this.artefacts.length - 1,
+				a = this.artefacts[i--];
+			while(a){
+				if (a.hitTest(p)) {
+					e = a;
+					break;
+				}
+				a = this.artefacts[i--];
+			}
+		}
+		return e;
+	}
+	itsDiagram(p){
+		let a = null,
+			mode = 'none';
+		for(let artefact of this.artefacts){
+			if(this.intersects.indexOf(artefact.className)>-1){
+				if(artefact.hitTest(p)){
+					mode = artefact.intersectTest(p);
+					a={
+						artefact,
+						mode
+					};
+					break;
+				}
+			}
+		}
+		return a;
+	}
+	itsMap(p){
+		let as = this.artefacts.filter(a=>a.className==="Process"),
+			a,
+			mode = 'none';
+		for(let artefact of as){
+			if(artefact.hitTest(p)){
+				mode= artefact.intersectTest(p);
+				a={
+					artefact,
+					mode
+				};
+				break;
+			}
+		}
+		return a;
+	}
 	drop(e){
-		//console.info('drop');
 		e.preventDefault();
-		this.model.dropEvent(e);
-	}
-	addProcessMap(name){
-		let map = new ProcessMap(this,{name:name});
-		this.models.push(map);
-		this.model = map;
-		//return map;
-	}
-	addProcessDiagram(name){
-		let diagram = new ProcessDiagram(this,{name:name});
-		this.models.push(diagram);
-		this.model = diagram;
-		//return diagram;
-	}
-	addProject(name){
-		console.info('creando un proyecto de modelado de procesos');
-	}
-	canvasResize(dimension){
-		//console.info('resize');
-		//console.info(dimension);
-		if(this.cvs.clientWidth<dimension.width){
-			this.cvs.setAttribute('width', dimension.width+'px');
+		let a = e.dataTransfer.getData('text'),
+			cons = this.constructors;
+		if(a && cons[a]){
+			let a_new = new cons[a](this,{name:a,x:e.layerX,y:e.layerY,className:a});
+			this.addArtefact(a_new);
+		}else{
+			console.error('Elemento desconocido para '+this.className,a);
 		}
-		if(this.cvs.clientHeight<dimension.height){
-			this.cvs.setAttribute('height', dimension.height+'px');
-		}
-		this.model.draw();
 	}
 }

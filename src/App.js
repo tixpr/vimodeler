@@ -3,7 +3,6 @@
 import { Menubar } from 'primereact/menubar';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Toolbar } from 'primereact/toolbar';
 import { Dialog } from 'primereact/dialog';
 //==============================================
 
@@ -50,8 +49,8 @@ export default class VModel extends React.Component {
 	}
 	componentDidMount() {
 		/*
-		if (this.cvs.getContext) {
-			this.modelayer = new Modelayer(this.cvs);
+		if (this.this.cvs.getContext) {
+			this.modelayer = new Modelayer(this.this.cvs);
 		} else {
 			console.error("canvas.getContext no soportado");
 		}
@@ -66,8 +65,8 @@ export default class VModel extends React.Component {
 		this.setState({ add_show: false,add_name:'' });
 	}
 	yesAdd() {
-		this.cvs.setAttribute('width', window.screen.width);
-		this.cvs.setAttribute('height', window.screen.height);
+		this.this.cvs.setAttribute('width', window.screen.width);
+		this.this.cvs.setAttribute('height', window.screen.height);
 		this[this.add_mode](this.state.add_name);
 		this.hideAdd();
 	}
@@ -121,8 +120,8 @@ export default class VModel extends React.Component {
 									</div>
 								</Toolbar>
 							) : (null)}
-							<div className="auto-flex cvs" ref={(c) => this.cvs_content = c}>
-								<canvas ref={(c) => this.cvs = c} width="0" height="0">
+							<div className="auto-flex this.cvs" ref={(c) => this.this.cvs_content = c}>
+								<canvas ref={(c) => this.this.cvs = c} width="0" height="0">
 								</canvas>
 							</div>
 						</div>

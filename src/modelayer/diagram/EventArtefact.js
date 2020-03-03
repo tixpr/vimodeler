@@ -16,9 +16,8 @@ export default class EventArtefact extends Artefact{
 		this.inputs[mode].push(artefact);
 	}
 	removeInput (artefact, mode){
-		let i = this.inputs[mode];
-		if(i){
-			i.remove(artefact);
+		if(this.inputs[mode]){
+			this.inputs[mode] = this.inputs[mode].filter(i=>i!==artefact)
 		}
 	}
 	addOutput (artefact, mode){
@@ -26,22 +25,21 @@ export default class EventArtefact extends Artefact{
 		this.outputs[mode].push(artefact);
 	}
 	removeOutput (artefact, mode){
-		let o = this.outputs[mode];
-		if(o){
-			o.remove(artefact);
+		if(this.outputs[mode]){
+			this.outputs[mode] = this.outputs[mode].filter(o=>o!==artefact);
 		}
 	}
-	intersectTest (px, py){
-		let e = this.core;
+	intersectTest (p){
+		let e = this;
 		let x = e.x,
 			y = e.y;
-		if(x-15<px && px<x-5 && y-5<py && py < y+5){
+		if(x-15<p.x && p.x<x-5 && y-5<p.y && p.y < y+5){
 			return 'left';
-		}else if(x-5<px && px<x+5 && y-15<py && py < y-5){
+		}else if(x-5<p.x && p.x<x+5 && y-15<p.y && p.y < y-5){
 			return 'top';
-		}else if(x+5<px && px<x+15 && y-5<py && py < y+5){
+		}else if(x+5<p.x && p.x<x+15 && y-5<p.y && p.y < y+5){
 			return 'right';
-		}else if(x-5<px && px<x+5 && y+5<py && py < y+15){
+		}else if(x-5<p.x && p.x<x+5 && y+5<p.y && p.y < y+15){
 			return 'bottom';
 		}else{
 			return 'none';

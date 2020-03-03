@@ -7,9 +7,9 @@ import thunk from 'redux-thunk';
 export const history = createBrowserHistory();
 
 const logger = store => next => action => {
-	console.log('disparando', action)
+	//console.log('disparando', action)
 	let result = next(action)
-	console.log('siguiente estado', store.getState())
+	//console.log('siguiente estado', store.getState())
 	return result;
 }
 

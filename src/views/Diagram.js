@@ -1,9 +1,9 @@
 import React from 'react';
 import Box from '../components/Box';
-import {Toolbar} from 'primereact/toolbar';
+import { Toolbar } from 'primereact/toolbar';
 import loadDiagram from '../redux/actions/diagramActions/loadDiagram';
-import DiagramModeler from '../components/DiagramModeler';
 import { connect } from 'react-redux';
+import Modelayer from '../modelayer/Modelayer';
 
 const boxs = [
 	//Endevent
@@ -141,11 +141,16 @@ const boxs = [
 	}
 ];
 
-class Diagram extends React.Component{
-	componentDidMount(){
-		this.props.loadDiagram(this.props.match.params.id);
+class Diagram extends React.Component {
+	constructor(props){
+		super(props);
+		this.modelayer=null;
 	}
-	render(){
+	componentDidMount() {
+		this.props.loadDiagram(this.props.match.params.id);
+		this.modelayer = new Modelayer(this.cvs, "Diagram");
+	}
+	render() {
 		return (
 			<div className="flex column">
 				<Toolbar>
@@ -154,7 +159,8 @@ class Diagram extends React.Component{
 					</div>
 				</Toolbar>
 				<div className="auto-flex cvs">
-					<DiagramModeler diagram={this.props.diagram}/>
+					<canvas ref={(c) => this.cvs = c} width="0" height="0">
+					</canvas>
 				</div>
 			</div>
 		);

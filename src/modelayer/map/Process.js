@@ -3,66 +3,41 @@ import Resizer from '../base/Resizer';
 
 //artefacto proceso de un mapa
 export default class Process extends Artefact {
-	constructor(map, object) {
-		super(map, object);
-		let w = this.width,
-			h = this.height;
-		this.core.x = this.x - w / 2;
-		this.core.y = this.y - h / 2;
-		this.core.width = this.core.width || 100;
-		this.core.height = this.core.height || 60;
-		this.lwidth = w - 10;
-		this.className = 'Process';
+	constructor(model, obj) {
+		super(model, obj);
+		if(!this.width){
+			this.width = 100;
+			this.x -= 50;
+		}
+		if(!this.height){
+			this.height = 60;
+			this.y -= 30;
+		}
 		this.inputs = {};
 		this.outputs = {};
-		let temp_resizers = [];
-		//redimensionador 1
-		let r = new Resizer(this, map, 0, 0, 'alterTopLeft');
-		temp_resizers.push(r);
-		r = new Resizer(this, map, w, 0, 'alterTopRight');
-		temp_resizers.push(r);
-		r = new Resizer(this, map, w, h, 'alterBottomRight');
-		temp_resizers.push(r);
-		r = new Resizer(this, map, 0, h, 'alterBottomLeft');
-		temp_resizers.push(r);
-		this.resizers = temp_resizers;
+		this.resizers = [
+			new Resizer(this, model, 0, 0, 'alterTopLeft'),
+			new Resizer(this, model, this.width, 0, 'alterTopRight'),
+			new Resizer(this, model, this.width, this.height, 'alterBottomRight'),
+			new Resizer(this, model, 0, this.height, 'alterBottomLeft')
+		];
 		this.addEventListener('dragstart', (e) => this.dragResize(e), false);
 		this.addEventListener('dragmove', (e) => this.dragResize(e), false);
 		this.addEventListener('dragend', (e) => this.dragResize(e), false);
 	}
-	get lx() {
-		return this.width / 2;
-	}
-	get ly() {
-		return this.height / 2;
-	}
-	set width(val) {
-		this.core.width = val;
-	}
-	get width() {
-		let r = this.core.width || 100;
-		return r;
-	}
-	set height(val) {
-		this.core.height = val;
-	}
-	get height() {
-		return this.core.height || 60;
-	}
 	dragResize(e) {
-		let dimension = { width: 0, height: 0 };
-		dimension.width = this.x + this.width;
-		dimension.height = this.y + this.height;
-		window.__modelayer.canvasResize(dimension);
+		let d = { width: 0, height: 0 };
+		d.width = this.x + this.width;
+		d.height = this.y + this.height;
+		this.parent.canvasResize(d);
 	}
 	addInput(flow, mode) {
 		this.inputs[mode] = this.inputs[mode] || [];
 		this.inputs[mode].push(flow);
 	}
 	removeInput(flow, mode) {
-		let i = this.inputs[mode];
-		if (i) {
-			i.remove(flow);
+		if (this.inputs[mode]) {
+			this.inputs[mode] = this.inputs[mode].filter(i=>i!==flow);
 		}
 	}
 	addOutput(flow, mode) {
@@ -70,116 +45,114 @@ export default class Process extends Artefact {
 		this.outputs[mode].push(flow);
 	}
 	removeOutput(flow, mode) {
-		let o = this.outputs[mode];
-		if (o) {
-			o.remove(flow);
+		if (this.outputs[mode]) {
+			this.outputs[mode] = this.outputs[mode].filter(o=>o!==flow);
 		}
 	}
-	alterTopLeft(mx, my) {
-		this.x += mx;
-		this.width -= mx;
-		this.y += my;
-		this.height -= my;
-		this.alterTopLeftElements(mx, my);
+	alterTopLeft(x,y) {
+		this.x += x;
+		this.width -= x;
+		this.y += y;
+		this.height -= y;
+		this.alterTopLeftElements(x,y);
 		this.alterResizers();
 	}
-	alterTopRight(mx, my) {
-		this.width += mx;
-		this.y += my;
-		this.height -= my;
-		this.alterTopRightElements(mx, my);
+	alterTopRight(x,y) {
+		this.width += x;
+		this.y += y;
+		this.height -= y;
+		this.alterTopRightElements(x,y);
 		this.alterResizers();
 	}
-	alterBottomRight(mx, my) {
-		this.width += mx;
-		this.height += my;
-		this.alterBottomRightElements(mx, my);
+	alterBottomRight(x,y) {
+		this.width += x;
+		this.height += y;
+		this.alterBottomRightElements(x,y);
 		this.alterResizers();
 	}
-	alterBottomLeft(mx, my) {
-		this.x += mx;
-		this.width -= mx;
-		this.height += my;
-		this.alterBottomLeftElements(mx, my);
+	alterBottomLeft(x,y) {
+		this.x += x;
+		this.width -= x;
+		this.height += y;
+		this.alterBottomLeftElements(x,y);
 		this.alterResizers();
 	}
-	alterTopLeftElements(mx, my) {
+	alterTopLeftElements(x,y) {
 		let il = this.inputs.left,
 			it = this.inputs.top,
 			ol = this.outputs.left,
 			ot = this.outputs.top;
 		if (il) {
-			il.map(i => i.moveEndPoint(mx, 0));
+			il.map(i => i.moveEndPoint(x, 0));
 		}
 		if (it) {
-			it.map(i => i.moveEndPoint(0, my));
+			it.map(i => i.moveEndPoint(0, y));
 		}
 		if (ol) {
-			ol.map(o => o.moveStartPoint(mx, 0));
+			ol.map(o => o.moveStartPoint(x, 0));
 		}
 		if (ot) {
-			ot.map(o => o.moveStartPoint(0, my));
+			ot.map(o => o.moveStartPoint(0, y));
 		}
 	}
-	alterTopRightElements(mx, my) {
+	alterTopRightElements(x, y) {
 		let ir = this.inputs.right,
 			it = this.inputs.top,
 			or = this.outputs.right,
 			ot = this.outputs.top;
 		if (ir) {
-			ir.map(i => i.moveEndPoint(mx, 0));
+			ir.map(i => i.moveEndPoint(x, 0));
 		}
 		if (it) {
-			it.map(i => i.moveEndPoint(0, my));
+			it.map(i => i.moveEndPoint(0, y));
 		}
 		if (or) {
-			or.map(o => o.moveStartPoint(mx, 0));
+			or.map(o => o.moveStartPoint(x, 0));
 		}
 		if (ot) {
-			ot.map(o => o.moveStartPoint(0, my));
+			ot.map(o => o.moveStartPoint(0, y));
 		}
 	}
-	alterBottomRightElements(mx, my) {
+	alterBottomRightElements(x, y) {
 		let ir = this.inputs.right,
 			ib = this.inputs.bottom,
 			or = this.outputs.right,
 			ob = this.outputs.bottom;
 		if (ir) {
-			ir.map(i => i.moveEndPoint(mx, 0));
+			ir.map(i => i.moveEndPoint(x, 0));
 		}
 		if (ib) {
-			ib.map(i => i.moveEndPoint(0, my));
+			ib.map(i => i.moveEndPoint(0, y));
 		}
 		if (or) {
-			or.map(o => o.moveStartPoint(mx, 0));
+			or.map(o => o.moveStartPoint(x, 0));
 		}
 		if (ob) {
-			ob.map(o => o.moveStartPoint(0, my));
+			ob.map(o => o.moveStartPoint(0, y));
 		}
 	}
-	alterBottomLeftElements(mx, my) {
+	alterBottomLeftElements(x, y) {
 		let il = this.inputs.left,
 			ib = this.inputs.bottom,
 			ol = this.outputs.left,
 			ob = this.outputs.bottom;
 		if (il) {
-			il.map(i => i.moveEndPoint(mx, 0));
+			il.map(i => i.moveEndPoint(x, 0));
 		}
 		if (ib) {
-			ib.map(i => i.moveEndPoint(0, my));
+			ib.map(i => i.moveEndPoint(0, y));
 		}
 		if (ol) {
-			ol.map(o => o.moveStartPoint(mx, 0));
+			ol.map(o => o.moveStartPoint(x, 0));
 		}
 		if (ob) {
-			ob.map(o => o.moveStartPoint(0, my));
+			ob.map(o => o.moveStartPoint(0, y));
 		}
 	}
 	applyStyle(ctx) {
 		ctx.fillStyle = '#eceef7';
 		ctx.strokeStyle = '#434343';
 		ctx.lineWidth = 1;
-		//ctx.transform(1, 0, 0, 1, this.x, this.y);
 		ctx.translate(this.x, this.y);
 	}
 	draw(ctx) {
@@ -190,10 +163,10 @@ export default class Process extends Artefact {
 		ctx.fill();
 		ctx.stroke();
 		ctx.fillStyle = this.fontFill;
-		ctx.font = this.font;
+		ctx.font = this.font();
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
-		ctx.transform(1, 0, 0, 1, this.lx, this.ly);
+		ctx.transform(1, 0, 0, 1, this.width/2, this.height/2);
 		let ts = this.name.split('\n'),
 			h = -this.fontHeight / this.fontLine;
 		if (ts.length > 1) {
@@ -215,19 +188,19 @@ export default class Process extends Artefact {
 		this.resizers[2].y = this.height;
 		this.resizers[3].y = this.height;
 	}
-	intersectTest(px, py) {
+	intersectTest(p) {
 		//console.info('x->'+ obj.x + ', y->' + obj.y + '; width->' + obj.width + ', height->' + obj.height);
 		let x = this.x,
 			y = this.y,
 			xw = this.x + this.width,
 			yh = this.y + this.height;
-		if (px > x && px < x + 10 && py > y + 10 && py < yh - 10) {
+		if (p.x > x && p.x < x + 10 && p.y > y + 10 && p.y < yh - 10) {
 			return 'left';
-		} else if (px > x + 10 && px < xw - 10 && py > y && py < y + 10) {
+		} else if (p.x > x + 10 && p.x < xw - 10 && p.y > y && p.y < y + 10) {
 			return 'top';
-		} else if (px > xw - 10 && px < xw && py > y - 10 && py < yh - 10) {
+		} else if (p.x > xw - 10 && p.x < xw && p.y > y - 10 && p.y < yh - 10) {
 			return 'right';
-		} else if (px > x + 10 && px < xw - 10 && py > yh - 10 && py < yh) {
+		} else if (p.x > x + 10 && p.x < xw - 10 && p.y > yh - 10 && p.y < yh) {
 			return 'bottom';
 		} else {
 			return 'none';

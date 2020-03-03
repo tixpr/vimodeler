@@ -14,11 +14,11 @@ export default class Resizer extends Artefact{
 			this.extra = extra;
 		}
 	}
-	alterElements(mx, my){
+	alterElements(x,y){
 		if (this.extra) {
-			this.artefact[this.callback](mx, my, this.extra);
+			this.artefact[this.callback](x,y, this.extra);
 		} else {
-			this.artefact[this.callback](mx, my);
+			this.artefact[this.callback](x,y);
 		}
 	}
 	applyStyle(ctx, x, y){
@@ -26,20 +26,19 @@ export default class Resizer extends Artefact{
 		ctx.strokeStyle = '#778851';
 		ctx.lineWidth = 1;
 		ctx.translate(x, y);
-		//ctx.transform(1, 0, 0, 1, x, y);
 	}
-	draw(ctx, point){
+	draw(ctx, p){
 		ctx.save();
-		this.applyStyle(ctx, point.x, point.y);
+		this.applyStyle(ctx, p.x, p.y);
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI, false);
+		ctx.arc(this.x, this.y, 10, 0, 2 * Math.PI, false);
 		ctx.fill();
 		ctx.stroke();
 		ctx.restore();
 	}
-	hitTest(one_point, two_point){
-		this.draw(this.temp_ctx, two_point);
-		return this.temp_ctx.isPointInPath(one_point.x, one_point.y);
+	hitTest(p1, p2){
+		this.draw(window._ctx, p2);
+		return window._ctx.isPointInPath(p1.x, p1.y);
 	}
 	getPosition(){
 		return {

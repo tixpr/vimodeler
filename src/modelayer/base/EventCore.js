@@ -15,11 +15,10 @@ export default class EventCore {
 		this.events[type].push(call);
 	}
 	removeEventListener(type, call){
-		let evts = this.events[type];
-		if(evts){
-			evts.remove(call);
+		if(this.events[type]){
+			this.events[type] = this.events[type].filter(c=>c!==call);
 		}
-		if(evts.length === 0){
+		if(this.events[type].length === 0){
 			delete this.events[type];
 		}
 	}

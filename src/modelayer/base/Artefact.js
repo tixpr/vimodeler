@@ -1,18 +1,29 @@
 import EventCore from './EventCore';
 
 //clase base de todos los artefactos
+const defaults = {
+	fontSize: 12,
+	fontStyle: '',
+	fontFill: '#000',
+	fontFamily: 'arial'
+};
 export default class Artefact extends EventCore {
-	constructor(model, object) {
+	constructor(model, obj) {
 		if (model) {
 			super();
 			this.parent = model;
-			this.ctx = model.ctx;
-			this.temp_ctx = model.temp_ctx;
-			this.core = object;
+			for(let prop in obj){
+				this[prop] = obj[prop];
+			}
+			for(let p in defaults){
+				if(!this[p]){
+					this[p] = defaults[p];
+				}
+			}
 			this.dragging = false;
 			this.alter_elements = false;
-			if (this.core !== null) {
-				this.fontDimension(this.temp_ctx);
+			if (this.name) {
+				this.fontDimension(window._ctx);
 			}
 			this.addEventListener('dragmove', (e) => this.dragMove(e));
 			this.addEventListener('dragstart', (e) => this.dragStart(e));
@@ -22,21 +33,21 @@ export default class Artefact extends EventCore {
 		}
 	}
 	drag(e) {
-		// Manejar artefact evento drag en todos los elementos dentro del modelo
-		let mx = e.x || 0,
-			my = e.y || 0;
+		let x = e.x || 0,
+			y = e.y || 0;
 		if (this.alter_elements) {
-			//console.info('alterando elementos desde alter_elements');
-			this.alterElements(mx, my);
+			this.alterElements(x, y);
 		} else {
-			this.x += mx;
-			this.y += my;
+			this.x += x;
+			this.y += y;
 			if (this.alterElements) {
-				//console.info('alterando elementos desde alterElements');
-				this.alterElements(mx, my);
+				this.alterElements(x, y);
 			}
 		}
 		this.parent.draw();
+	}
+	alterElements(p){
+		console.error('método alter element no implementado');
 	}
 	dragStart(e) {
 		this.dragging = true;
@@ -53,68 +64,10 @@ export default class Artefact extends EventCore {
 			this.parent.draw();
 		}
 	}
-	set fontSize(v) {
-		this.core.fontSize = v;
-		this.fontDimension(this.temp_ctx);
-		this.parent.draw();
-	}
-	get fontSize() {
-		return this.core.fontSize || 12;
-	}
-	set fontStyle(v) {
-		this.core.fontStyle = v;
-		this.fontDimension(this.temp_ctx);
-		this.parent.draw();
-	}
-	get fontStyle() {
-		return this.core.fontStyle || '';
-	}
-	set fontFill(v) {
-		this.core.fontFill = v;
-		this.parent.draw();
-	}
-	get fontFill() {
-		return this.core.fontFill || '#000';
-	}
-	set fontFamily(v) {
-		this.core.fontFamily = v;
-		this.fontDimension(this.temp_ctx);
-		this.parent.draw();
-	}
-	get fontFamily() {
-		return this.core.fontFamily || 'arial';
-	}
-	get font() {
+	font() {
 		return this.fontStyle + ' ' + this.fontSize + 'px ' + this.fontFamily;
 	}
-	set name(v) {
-		this.core.name = v;
-		this.fontDimension(this.temp_ctx);
-		this.parent.draw();
-	}
-	get name() {
-		return this.core.name || '';
-	}
-	set className(v = null) {
-		this.core.className = v;
-	}
-	get className() {
-		return this.core.className || '';
-	}
-	set x(v) {
-		this.core.x = v;
-	}
-	get x() {
-		return this.core.x;
-	}
-	set y(v) {
-		this.core.y = v;
-	}
-	get y() {
-		return this.core.y;
-	}
 	fontDimension(ctx) {
-		//console.info(me);
 		ctx.save();
 		this.applyStyle(ctx);
 		let ts = this.name.split('\n'),
@@ -122,8 +75,8 @@ export default class Artefact extends EventCore {
 			w = 0,
 			h = this.fontSize;
 		this.fontLine = ts.length;
-		for (let i = 0, n = ts.length; i < n; i++) {
-			t = ctx.measureText(ts[i]).width;
+		for(let txt of ts){
+			t = ctx.measureText(txt).width;
 			if (t > w) {
 				w = t;
 			}
@@ -146,8 +99,8 @@ export default class Artefact extends EventCore {
 			y: this.y
 		};
 	}
-	hitTest(point) {
-		this.draw(this.temp_ctx);
-		return this.temp_ctx.isPointInPath(point.x, point.y);
+	hitTest(p) {
+		this.draw(window._ctx);
+		return window._ctx.isPointInPath(p.x, p.y);
 	}
 };

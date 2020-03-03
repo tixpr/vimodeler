@@ -14,7 +14,7 @@ class Diagrams extends React.Component{
 		return (
 			<div className="flex row justify-center align-center wrap">
 				{this.props.diagrams.map(diagram=>{
-					let to="/diagram/"+diagram.id;
+					let to="/diagrams/"+diagram.id;
 					return (
 						<Link key={diagram.id} to={to}>
 							<Card  title={diagram.name} style={{width: '360px',textAlign:'center',margin: '10px'}}>

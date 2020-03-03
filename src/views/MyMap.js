@@ -2,8 +2,8 @@ import React from 'react';
 import {Toolbar} from 'primereact/toolbar';
 import Box from '../components/Box';
 import loadMap from '../redux/actions/mapActions/loadMap';
-import MapModeler from '../components/MapModeler';
 import { connect } from 'react-redux';
+import Modelayer from '../modelayer/Modelayer';
 
 const boxs = [
 	//Process
@@ -94,6 +94,7 @@ const boxs = [
 class MyMap extends React.Component{
 	componentDidMount(){
 		this.props.loadMap(this.props.match.params.id);
+		this.modelayer = new Modelayer(this.cvs,"Map");
 	}
 	render(){
 		return (
@@ -104,7 +105,8 @@ class MyMap extends React.Component{
 					</div>
 				</Toolbar>
 				<div className="auto-flex cvs">
-					<MapModeler map={this.props.map}/>
+					<canvas ref={(c) => this.cvs = c} width="0" height="0">
+					</canvas>
 				</div>
 			</div>
 		);
