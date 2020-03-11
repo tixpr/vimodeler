@@ -1,12 +1,13 @@
 import EventCore from './EventCore';
 
-//clase base de todos los artefactos
-const defaults = {
+export const defaults = {
 	fontSize: 12,
 	fontStyle: '',
 	fontFill: '#000',
 	fontFamily: 'arial'
 };
+
+//clase base de todos los artefactos
 export default class Artefact extends EventCore {
 	constructor(model, obj) {
 		if (model) {
@@ -28,9 +29,10 @@ export default class Artefact extends EventCore {
 			this.addEventListener('dragmove', (e) => this.dragMove(e));
 			this.addEventListener('dragstart', (e) => this.dragStart(e));
 			this.addEventListener('dragend', (e) => this.dragEnd(e));
-		} else {
-			console.error("Modelo no proporcionado");
 		}
+	}
+	loadArtefact(){
+		console.warn("loadArtefact no definido");
 	}
 	drag(e) {
 		let x = e.x || 0,
@@ -47,7 +49,7 @@ export default class Artefact extends EventCore {
 		this.parent.draw();
 	}
 	alterElements(p){
-		console.error('método alter element no implementado');
+		console.warn('método alter element no implementado');
 	}
 	dragStart(e) {
 		this.dragging = true;
@@ -88,10 +90,10 @@ export default class Artefact extends EventCore {
 		ctx.restore();
 	}
 	draw(ctx) {
-		console.error("Función draw no implementada en el artefacto");
+		console.warn("Función draw no implementada en el artefacto");
 	}
 	applyStyle(ctx) {
-		console.error("No se especifico el estilo del artefacto");
+		console.warn("No se especifico el estilo del artefacto");
 	}
 	getPosition() {
 		return {

@@ -1,31 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme from './theme';
 import './normalize.css';
-/*
-import './index.scss';
-*/
-import './styles.scss';
-import 'primereact/resources/themes/nova-light/theme.css';
-//import 'primereact/resources/themes/luna-blue/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-
-import {Provider} from 'react-redux';
-//import {loadMaps} from './redux/actions/mapsActions';
-import { ConnectedRouter } from 'connected-react-router';
-import store, {history} from './redux/store';
-
 import MyApp from './MyApp';
 import * as serviceWorker from './serviceWorker';
-
-//store.dispatch(loadMaps());
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 ReactDOM.render(
-	<Provider store={store}>
-		<ConnectedRouter history={history}>
-			<MyApp />
-		</ConnectedRouter>
-	</Provider>,
+	<ThemeProvider theme={theme}>
+		<CssBaseline />
+		<MyApp />
+	</ThemeProvider>,
 	document.getElementById('app')
 );
 

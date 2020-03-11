@@ -3,7 +3,6 @@ import Flow from '../map/Flow';
 //artefacto de sequencia en diagrama
 export default class Sequence extends Flow{
 	setStart (artefact, mode){
-		console.info('setStart',artefact);
 		let r = this.resizers[0], e = artefact;
 		if(mode === 'none'){
 			mode = 'right';
@@ -61,7 +60,6 @@ export default class Sequence extends Flow{
 		this.startMode = mode;
 	}
 	setEnd (artefact, mode){
-		console.info('setEnd',artefact);
 		let n = this.points.length,
 			r = this.resizers[this.resizers.length - 1],
 			e = artefact;

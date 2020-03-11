@@ -12,6 +12,9 @@ body{
 	border: 0;
 	//background-color: #191919;
 }
+*{
+	font-family: 'Roboto', sans-serif;
+}
 [draggable="true"]{
 	cursor: move;
 }
@@ -22,10 +25,6 @@ canvas{
 	top: 0;
 	background-color: #fff;
 }
-canvas,
-#board{
-	background-color: white;
-}
 #app{
 	display: block;
 	width: 100%;
@@ -35,6 +34,36 @@ canvas,
 	padding: 0;
 	border: 0;
 	overflow: hidden;
+}
+header{
+	background-color: #2f419b;
+	width: 200px;
+	overflow-x: none;
+}
+nav{
+	overflow-x: hidden;
+	overflow-y: auto;
+	ul{
+		list-style: none;
+		padding: 0;
+	}
+}
+.nav-item{
+	appearance: none;
+	border: 0;
+	padding: 0;
+	background-color: transparent;
+	&>*{
+		color: #acb3d7;
+	}
+	&:hover>*{
+		color: white;
+	}
+}
+.nav-icon{
+	width: 30px;
+	height: 30px;
+	margin: 10px;
 }
 .flex{
 	display: flex;
@@ -49,7 +78,6 @@ canvas,
 	align-items: stretch;
 }
 .auto-flex{
-	//flex: 1 1 0em;
 	flex-grow: 1;
 }
 .justify-center{
@@ -60,8 +88,14 @@ canvas,
 	align-items: center !important;
 	align-content: center;
 }
+.start-column{
+	align-content: flex-start;
+}
 .wrap{
 	flex-wrap: wrap;
+}
+.stretch{
+	align-items: stretch;
 }
 .cvs{
 	position: relative;
@@ -72,5 +106,6 @@ canvas,
 	display: inline-block;
 }
 .inline[draggable="true"]{
-	margin: 0 5px;
+	margin: 10px;
 }
+  

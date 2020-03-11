@@ -11,6 +11,16 @@ import EndEvent from './diagram/EndEvent';
 import Sequence from './diagram/Sequence';
 import Gateway from './diagram/Gateway';
 
+//===========Propiedades del modelo para el json=====================
+const properties = [
+	'id',
+	'name',
+	'diagram',
+	'width',
+	'height',
+	'parentModel',
+];
+
 export default class Modelayer extends EventCore{
 	constructor(canvas, mode,model=null) {
 		super();
@@ -24,13 +34,26 @@ export default class Modelayer extends EventCore{
 			this.cvs.addEventListener('dragleave',(e)=>this.dragLeave(e),false);
 			this.cvs.addEventListener('drop',(e)=>this.drop(e),false);
 			this.mode = mode;
-			this.model = model;
 			this.artefacts=[];
+			if(model){
+				for(let prop in model){
+					this[prop] = model[prop];
+				}
+				this.elements = this.elements||[];
+			}
+			if(!this.index){
+				this.index=1;
+			}
+			if(!this.width){
+				this.width=window.screen.width;
+			}
+			if(!this.height){
+				this.height=window.screen.height;
+			}
 			this.artefact = null;
 			this.intersectTest = null;
 			this.constructors = {};
 			this.mouseMove = (e)=>this.mouse_move(e);
-			this.mouse_move.bind(this);
 			switch(mode){
 				case "Map":
 					this.constructors = {
@@ -63,9 +86,24 @@ export default class Modelayer extends EventCore{
 			if(!model){
 				this.cvs.setAttribute('width', window.screen.width);
 				this.cvs.setAttribute('height', window.screen.height);
+			}else{
+				this.cvs.setAttribute('width', Math.max(window.screen.width,this.width));
+				this.cvs.setAttribute('height',Math.max(window.screen.height,this.height));
+				this.loadModel();
 			}
 		}else{
 			console.error('Su navegador no soporta Canvas, actualizar a la ultima versión estable disponible');
+		}
+	}
+	loadModel(){
+		let cons = this.constructors, art=null;
+		for(let el of this.elements){
+			art = new cons[el.className](this,el);
+			this.addArtefact(art);
+		}
+		console.info('atefactos creados');
+		for(let art of this.artefacts){
+			art.loadArtefact();
 		}
 	}
 	mouse_move(e){
@@ -108,8 +146,6 @@ export default class Modelayer extends EventCore{
 				this.artefact = a;
 			}
 			this.draw();
-		}else{
-			console.info('artefacto no seleccionado');
 		}
 		this.cvs.removeEventListener('mousemove',this.mouseMove);
 		return false;
@@ -216,10 +252,27 @@ export default class Modelayer extends EventCore{
 		let a = e.dataTransfer.getData('text'),
 			cons = this.constructors;
 		if(a && cons[a]){
-			let a_new = new cons[a](this,{name:a,x:e.layerX,y:e.layerY,className:a});
+			let a_new = new cons[a](this,{id:this.index++,name:a,x:e.layerX,y:e.layerY,className:a});
+			console.info(a_new);
 			this.addArtefact(a_new);
-		}else{
-			console.error('Elemento desconocido para '+this.className,a);
 		}
+	}
+	toJSON(){
+		let obj = {};
+		for(let p of properties){
+			if(this[p]){
+				obj[p]=this[p];
+			}
+		}
+		let artefacts = [], temp;
+		for(let art of this.artefacts){
+			temp = art.toJSON();
+			if(temp){
+				artefacts.push(temp);
+			}
+		}
+		obj.elements = artefacts;
+		console.info(obj);
+		return obj;
 	}
 }

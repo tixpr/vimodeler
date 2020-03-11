@@ -1,12 +1,6 @@
 import React from 'react';
-import {Toolbar} from 'primereact/toolbar';
-import Box from '../components/Box';
-import loadMap from '../redux/actions/mapActions/loadMap';
-import updateMap from '../redux/actions/mapActions/updateMap';
-import { connect } from 'react-redux';
-import Modelayer from '../modelayer/Modelayer';
 
-const boxs = [
+export default [
 	//Process
 	{
 		name: 'Process',
@@ -91,58 +85,3 @@ const boxs = [
 		</g>
 	}
 ];
-
-class MyMap extends React.Component{
-	componentDidMount(){
-		this.props.loadMap(this.props.match.params.id);
-	}
-	componentDidUpdate(){
-		console.info(this.props);
-		this.modelayer = new Modelayer(this.cvs,"Map",this.props.map);
-		window.__modelayer = this.modelayer;
-	}
-	saveMap(e){
-		e.preventDefault();
-		if(this.modelayer.id){
-			console.info('actualizando');
-			this.props.updateMap(this.modelayer.toJSON());
-		}else{
-			console.info('sin actualizar');
-		}
-	}
-	render(){
-		return (
-			<div className="flex column">
-				<Toolbar>
-					<div className="p-toolbar-group-left">
-						{boxs.map(el => <Box key={el.name} boxName={el.name} element={el.element} />)}
-						<button onClick={(e)=>this.saveMap(e)}>
-							Guardar
-						</button>
-					</div>
-				</Toolbar>
-				<div className="auto-flex cvs">
-					<canvas ref={(c) => this.cvs = c} width="0" height="0">
-					</canvas>
-				</div>
-			</div>
-		);
-	}
-}
-const mapStateToProps = state => {
-	return {
-		map: state.map
-	};
-};
-const mapDispatchToProps = dispatch => {
-	return {
-		loadMap(id) {
-			dispatch(loadMap(id));
-		},
-		updateMap(map){
-			dispatch(updateMap(map));
-		}
-	};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(MyMap);

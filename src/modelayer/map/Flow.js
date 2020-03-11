@@ -1,6 +1,22 @@
-import Artefact from '../base/Artefact';
+import Artefact,{defaults} from '../base/Artefact';
 import Label from './Label';
 import Resizer from '../base/Resizer';
+
+//===============Propiedades a exportar en json================================
+const properties = [
+	'id',
+	'x',
+	'y',
+	'tx',
+	'ty',
+	'name',
+	'className',
+	'points',
+	'fontSize',
+	'fontStyle',
+	'fontFill',
+	'fontFamily'
+];
 
 //artefacto flujo de un mapà
 export default class Flow extends Artefact {
@@ -10,7 +26,13 @@ export default class Flow extends Artefact {
 		this.x = 0;
 		this.y = 0;
 		this.angle = 0;
-		this.text = new Label(model, { name: this.name, x: this.points[0].x + 50, y: this.points[0].y + 10 }, this);
+		if(!this.tx){
+			this.tx = this.points[0].x + 50;
+		}
+		if(!this.ty){
+			this.ty = this.points[0].y + 10;
+		}
+		this.text = new Label(model, { name: this.name, x: this.tx, y: this.ty }, this);
 		this.parent.addArtefact(this.text);
 		let temp_resizers = [];
 		//variable que controla que punto se a movido
@@ -18,7 +40,6 @@ export default class Flow extends Artefact {
 		//1->se mueve artefact punto inicial (start)
 		//2->se mueve artefact punto final (end)
 		this.mov_point = 0;
-		console.info(this.points);
 		this.addEventListener('dragend',()=>this.dropFlow());
 		if (this.points.length === 2) {
 			//redimensionador 1
@@ -43,6 +64,22 @@ export default class Flow extends Artefact {
 			r.addEventListener('dragend', (e) => this.dragEndResizer(e));
 			temp_resizers.push(r);
 			this.resizers = temp_resizers;
+		}
+	}
+	loadArtefact(){
+		if(this.start_data){
+			let temp = this.parent.artefacts.find(el=>el.id===this.start_data.id);
+			if(temp){
+				this.start = temp;
+				this.startMode = this.start_data.mode;
+			}
+		}
+		if(this.end_data){
+			let temp = this.parent.artefacts.find(el=>el.id===this.end_data.id);
+			if(temp){
+				this.end = temp;
+				this.endMode = this.end_data.mode;
+			}
 		}
 	}
 	setStart(artefact, mode) {
@@ -151,8 +188,7 @@ export default class Flow extends Artefact {
 				ctx.lineTo(mx - 7, my - 9);
 				ctx.lineTo(mx, my);
 				break;
-			default:
-				console.error('angulo no especificado en artefact flujo');
+			default:break;
 		}
 		//ctx.fill();
 		//ctx.closePath();
@@ -167,7 +203,6 @@ export default class Flow extends Artefact {
 		return window._ctx.isPointInStroke(point.x, point.y) || window._ctx.isPointInPath(point.x, point.y);
 	}
 	dropFlow(){
-		console.info('drop flow');
 		if (this.start) {
 			this.start.removeOutput(this, this.startMode);
 			delete this.start;
@@ -191,6 +226,8 @@ export default class Flow extends Artefact {
 			r[j].x += this.x;
 			r[j].y += this.y;
 		}
+		this.tx += this.x;
+		this.ty += this.y;
 		this.x = 0;
 		this.y = 0;
 	}
@@ -260,6 +297,18 @@ export default class Flow extends Artefact {
 		this.text.y += my;
 	}
 	toJSON() {
-		return JSON.stringify(this);
+		let obj = {};
+		for(let p of properties){
+			if(this[p] && this[p]!==defaults[p]){
+				obj[p]=this[p];
+			}
+		}
+		if(this.start){
+			obj['start_data'] = {id:this.start.id,mode:this.startMode};
+		}
+		if(this.end){
+			obj['end_data'] = {id:this.end.id,mode:this.endMode};
+		}
+		return obj;
 	}
 };

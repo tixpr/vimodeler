@@ -1,9 +1,9 @@
 import axios from 'axios';
 export const updateMapType = 'updateMap';
 
-const updateMap = (id,map)=>{
+const updateMap = (map)=>{
 	return dispatch =>{
-		axios.put("http://localhost:3001/maps/"+id)
+		axios.put("http://localhost:3001/maps/"+map.id,map)
 		.then(response=>{
 			dispatch({
 				type: updateMapType,

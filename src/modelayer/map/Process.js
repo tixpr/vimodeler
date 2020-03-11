@@ -1,6 +1,20 @@
-import Artefact from '../base/Artefact';
+import Artefact, {defaults} from '../base/Artefact';
 import Resizer from '../base/Resizer';
 
+//========Propiedades a exportar en json=====================
+const properties = [
+	'id',
+	'x',
+	'y',
+	'width',
+	'height',
+	'name',
+	'className',
+	'fontSize',
+	'fontStyle',
+	'fontFill',
+	'fontFamily'
+];
 //artefacto proceso de un mapa
 export default class Process extends Artefact {
 	constructor(model, obj) {
@@ -24,6 +38,30 @@ export default class Process extends Artefact {
 		this.addEventListener('dragstart', (e) => this.dragResize(e), false);
 		this.addEventListener('dragmove', (e) => this.dragResize(e), false);
 		this.addEventListener('dragend', (e) => this.dragResize(e), false);
+	}
+	loadArtefact(){
+		if(this.inputFlows){
+			let temp = null;
+			for(let mode in this.inputFlows){
+				for(let p of this.inputFlows[mode]){
+					temp = this.parent.artefacts.find(el=>el.id===p);
+					if(temp){
+						this.addInput(temp,mode);
+					}
+				}
+			}
+		}
+		if(this.outputFlows){
+			let temp = null;
+			for(let mode in this.outputFlows){
+				for(let p of this.outputFlows[mode]){
+					temp = this.parent.artefacts.find(el=>el.id===p);
+					if(temp){
+						this.addOutput(temp,mode);
+					}
+				}
+			}
+		}
 	}
 	dragResize(e) {
 		let d = { width: 0, height: 0 };
@@ -189,7 +227,6 @@ export default class Process extends Artefact {
 		this.resizers[3].y = this.height;
 	}
 	intersectTest(p) {
-		//console.info('x->'+ obj.x + ', y->' + obj.y + '; width->' + obj.width + ', height->' + obj.height);
 		let x = this.x,
 			y = this.y,
 			xw = this.x + this.width,
@@ -214,5 +251,30 @@ export default class Process extends Artefact {
 		for (m in this.outputs) {
 			this.outputs[m].map(o=>o.moveStartPoint(mx,my));
 		}
+	}
+	toJSON() {
+		let obj = {};
+		for(let p of properties){
+			if(this[p] && this[p]!==defaults[p]){
+				obj[p]=this[p];
+			}
+		}
+		let inputs = {},
+			outputs = {};
+		for(let i in this.inputs){
+			if(!inputs[i]){
+				inputs[i] = [];
+			}
+			this.inputs[i].map(v=>inputs[i].push(v.id));
+		}
+		for(let i in this.outputs){
+			if(!outputs[i]){
+				outputs[i] = [];
+			}
+			this.outputs[i].map(v=>outputs[i].push(v.id));
+		}
+		obj.inputFlows = inputs;
+		obj.outputFlows = outputs;
+		return obj;
 	}
 };
