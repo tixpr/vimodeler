@@ -5,8 +5,11 @@ import {updateMapType} from '../actions/mapActions/updateMap';
 const map = (state=[], {type,map}) => {
 	switch(type){
 		case loadMapType:
+		case newMapType:
+			console.info(map);
+			console.info(state);
+			return state; 
 		case updateMapType:
-		case newMapType: return map;
 		default: return state;
 	}
 };

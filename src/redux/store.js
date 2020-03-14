@@ -1,10 +1,15 @@
-import {createBrowserHistory} from 'history';
-import {createStore, applyMiddleware, compose} from 'redux';
-import { routerMiddleware } from 'connected-react-router'
-import createRootReducer from './reducers';
+import {
+	createStore,
+	applyMiddleware,
+	compose,
+	combineReducers
+} from 'redux';
 import thunk from 'redux-thunk';
+import maps from './reducers/maps';
+import diagrams from './reducers/diagrams';
+import map from './reducers/map';
+import diagram from './reducers/diagram';
 
-export const history = createBrowserHistory();
 
 const logger = store => next => action => {
 	//console.log('disparando', action)
@@ -16,11 +21,14 @@ const logger = store => next => action => {
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
-	createRootReducer(history)
-	,
+	combineReducers({
+		maps,
+		diagrams,
+		map,
+		diagram
+	}),
 	composeEnhancers(
 		applyMiddleware(
-			routerMiddleware(history), // for dispatching history actions
 			logger,
 			thunk
 		)

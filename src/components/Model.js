@@ -1,5 +1,5 @@
 import React from 'react';
-import Modelayer from './modelayer/Modelayer';
+import Modelayer from '../modelayer/Modelayer';
 
 export default class Model extends React.Component{
 	componentDidMount(){
